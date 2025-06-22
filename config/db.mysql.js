@@ -1,0 +1,18 @@
+const mysql = require("mysql2");
+
+const mysqlPool = mysql.createPool({
+  host: process.env.MYSQL_HOST,
+  user: process.env.MYSQL_USER,
+  password: process.env.MYSQL_PASSWORD,
+  database: process.env.MYSQL_DATABASE,
+});
+
+mysqlPool.getConnection((err) => {
+  if (err) {
+    console.error("❌ MySQL connection failed:", err);
+  } else {
+    console.log("✅ MySQL connected");
+  }
+});
+
+module.exports = mysqlPool;

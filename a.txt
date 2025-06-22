@@ -1,0 +1,523 @@
+==================================WEEK 1========================================================
+
+✅ Week 1–2 Goal: Build a RESTful API for E-commerce
+We'll cover:
+
+✅ Project structure
+
+✅ CRUD APIs (User, Product, Order)
+
+✅ MongoDB and MySQL integration
+
+✅ Environment variables
+
+✅ Postman testing
+---------------------------------
+npm install express mongoose mysql2 dotenv cors
+
+-----------------------------------
+Test in Postman
+
+POST /api/users → Create user
+GET /api/users → Get all users
+
+Same for products and orders.
+----------------------------------
+Week 1 Output
+
+You now have:
+
+MongoDB integrated backend with structured APIs.
+CRUD routes working for User, Product, Order.
+MySQL pool configured for future use.
+
+
+
+==================================WEEK 2========================================================
+
+
+Let’s now move on to ✅ Week 2: Authentication & Authorization — a critical module for any backend developer.
+
+🎯 Week 2 Goal
+
+Implement secure login & registration system with:
+
+Password hashing (bcrypt)
+JWT access tokens
+Role-based access (admin, user)
+Protected routes
+
+✅ Tech Stack Used
+Feature	            Library
+Password Hashing	bcryptjs
+Token Auth	        jsonwebtoken
+Middleware	        Express
+
+------------------------------------
+npm install bcryptjs jsonwebtoken
+
+-----------------------------------
+Test in Postman
+Action	        Method	    Endpoint	         Body Example
+Register	    POST	    /api/auth/register	 { "name": "Krishna", "email": "k@k.com", "password": "123456", "role": "admin" }
+Login	        POST	    /api/auth/login	     { "email": "k@k.com", "password": "123456" }
+Protected API	GET/POST	Use token as Bearer in Header                -
+
+--------------------------------
+✅ Week 2 Output
+You now have:
+
+🔐 Secure login and registration
+🔑 JWT token-based auth
+🛡 Role-based access (Admin-only routes)
+🧪 Ready for protected API endpoints
+----------------------------------
+
+✅ 1. Postman Collection (Auth + Product API)
+
+🧪 How to Test in Postman
+📌 Step 1: Register User
+Method: POST
+
+URL: http://localhost:5000/api/auth/register
+
+Body (JSON):
+
+{
+  "name": "Krishna",
+  "email": "krishna@example.com",
+  "password": "123456",
+  "role": "admin"
+}
+
+📌 Step 2: Login
+Method: POST
+
+URL: http://localhost:5000/api/auth/login
+
+Body (JSON):
+
+{
+  "email": "krishna@example.com",
+  "password": "123456"
+}
+
+✅ Copy the token from the response (e.g. "token": "eyJhbGciOi...")
+
+📌 Step 3: Add Token in Authorization
+
+Click "Authorization" tab
+Type: Bearer Token
+Paste the token from login response
+
+📌 Step 4: Create Product (Admin Only)
+
+Method: POST
+
+URL: http://localhost:5000/api/products
+
+Body (JSON):
+
+{
+  "name": "iPhone 15",
+  "price": 999,
+  "category": "Mobile"
+}
+
+📌 Step 5: Get All Products
+
+Method: GET
+
+URL: http://localhost:5000/api/products
+
+---------------------------------------------------
+✅ 2. Save Token in Frontend (localStorage)
+
+✅ After successful login, use this in React/JS:
+
+// When login is successful:
+localStorage.setItem("token", response.data.token);
+
+// To use later:
+const token = localStorage.getItem("token");
+------
+Then send in header when calling APIs:
+
+
+axios.get("http://localhost:5000/api/products", {
+  headers: {
+    Authorization: `Bearer ${token}`,
+  }
+});
+--------------------------------
+
+A simple frontend login form to test this?
+
+✅ Takes email and password
+✅ Calls your /api/auth/login API
+✅ Saves the token in localStorage
+✅ Logs the user info and token
+
+
+✅ How to Use
+
+Save this as login.html
+Open it in your browser
+Enter the login email and password
+
+After successful login:
+
+You'll see “✅ Login successful!”
+Token is saved in localStorage
+
+✅ Check Saved Token
+Open DevTools → Application → Local Storage → token will be visible there
+-----------------------------
+
+
+========================================WEEK 3=========================
+
+✅ Week 3: API Security & Validation — very important to protect your app from hackers and invalid data.
+
+🎯 Week 3 Goal
+
+✅ Validate inputs (using express-validator)
+✅ Secure headers (using helmet)
+✅ Limit requests (Rate Limiting)
+✅ Handle CORS properly
+✅ Prevent NoSQL/SQL Injection
+-------------------------
+npm install express-validator helmet express-rate-limit cors
+
+---------------------------
+🔐 Step 5: Prevent NoSQL Injection
+If you're using req.body, req.query, or req.params directly, sanitize inputs using express-validator.
+
+You can also install a special sanitization middleware (optional):
+
+npm install express-mongo-sanitize
+
+
+In app.js:
+
+const mongoSanitize = require("express-mongo-sanitize");
+app.use(mongoSanitize());
+
+This removes $, {}, etc. from queries to avoid injection.
+----------------------------
+Step 6: Test in Postman
+
+Try these:
+
+Case	                       Expected Result
+Register with empty fields	 ❌ Shows validation errors
+Login with invalid email	   ❌ Shows "Invalid email"
+Send many requests quickly	 ❌ "Too many requests"
+Check headers in response	   ✅ Helmet is adding security headers
+------------------------------
+
+✅ Week 3 Summary
+Feature          	Library
+Input Validation	express-validator
+Secure Headers	  helmet
+CORS Handling	    cors
+Rate Limiting	    express-rate-limit
+Injection Protection	express-mongo-sanitize (optional)
+-------------------------------
+
+Sample Postman Error Cases
+
+These will test your validation, rate limit, and security:
+
+❌ 1. Register Without Name
+
+POST http://localhost:5000/api/auth/register
+
+{
+  "email": "test@mail.com",
+  "password": "123456"
+}
+
+📢 Expected:
+
+{
+  "errors": [
+    { "msg": "Name is required", ... }
+  ]
+}
+
+❌ 2. Login With Invalid Email
+
+POST http://localhost:5000/api/auth/login
+
+{
+  "email": "not-an-email",
+  "password": "123456"
+}
+
+📢 Expected:
+
+{
+  "errors": [
+    { "msg": "Invalid email", ... }
+  ]
+}
+
+❌ 3. Trigger Rate Limit (100+ requests in 15 min)
+Send any request (like GET /api/products) over 100 times quickly.
+
+📢 Expected:
+
+{
+  "message": "Too many requests, please try again later."
+}
+
+📦 MongoDB Injection Demo
+MongoDB injection is when someone sends a query like:
+
+{
+  "email": { "$gt": "" },
+  "password": "123456"
+}
+
+This tries to bypass login using a MongoDB query operator.
+
+❌ Dangerous Payload (Simulated Hacker Input)
+POST http://localhost:5000/api/auth/login
+
+
+{
+  "email": { "$gt": "" },
+  "password": "123456"
+}
+
+🧨 Without protection, it may return a user or crash the server.
+
+✅ How to Block It
+If you're using this in app.js:
+
+
+const mongoSanitize = require("express-mongo-sanitize");
+app.use(mongoSanitize());
+
+📢 Now the same payload becomes safe and gives:
+
+{
+  "message": "User not found"
+}
+
+✅ Summary
+Test	              What It Proves
+Missing name	      Input validation
+Invalid email	      Email format check
+Too many requests	  Rate limiting
+MongoDB injection	  Security patching
+
+=================================================WEEK 4=========================================
+
+✅ Week 4: Error Handling & Logging — essential for debugging, monitoring, and maintaining your backend app.
+
+🎯 Week 4 Goal
+
+✅ Centralized error handling (middleware)
+✅ Custom error messages
+✅ Logging with Winston
+✅ Request logs with Morgan
+
+--------------------------------------
+npm install winston morgan
+
+--------------------------------------
+Step 3: Centralized Error Handler
+
+📁 middlewares/error.middleware.js
+
+const logger = require("../utils/logger");
+
+const errorHandler = (err, req, res, next) => {
+  logger.error(`${req.method} ${req.url} - ${err.message}`);
+
+  res.status(err.statusCode || 500).json({
+    message: err.message || "Internal Server Error",
+  });
+};
+
+module.exports = errorHandler;
+-------------
+🧱 Step 4: Custom Error Example
+Anywhere (e.g. in a controller):
+
+
+if (!user) {
+  const error = new Error("User not found");
+  error.statusCode = 404;
+  return next(error); // Pass to error handler
+}
+------------
+📒 Step 5: Use Morgan for HTTP Logs
+In app.js:
+
+const morgan = require("morgan");
+
+// Log HTTP requests
+app.use(morgan("dev")); // Or use 'combined' for more details
+
+📝 This prints:
+
+GET /api/products 200 15ms
+POST /api/auth/login 401 10ms
+-----------
+
+🧩 Step 6: Connect Error Middleware
+At the bottom of app.js, after routes:
+
+const errorHandler = require("./middlewares/error.middleware");
+
+// ...all routes above
+
+app.use(errorHandler);
+
+------------------------
+Test Example (In Postman)
+
+Call /api/products/123456 where ID doesn’t exist.
+
+Expected:
+
+{
+  "message": "Product not found"
+}
+
+And logs/error.log will contain:
+
+[2025-06-21T09:42:10.123Z] error: GET /api/products/123456 - Product not found
+
+--------------------------------
+✅  Week 4 Summary
+Feature	          Tool
+Error handling	  Custom middleware
+Logging	          Winston
+Request logging  	Morgan
+Log files	        logs/error.log, logs/combined.log
+
+💡 Tip: Later you can send error logs to email or Slack using Winston transports.
+---------------------------------
+📊 Chart: Winston Log File System
+
+📁 File	            🔍 Purpose	                    📌 Logs Included	                                            📦 Created When
+logs/combined.log	  ✅ All logs (info, error, etc.)	GET /api/products - success, POST /api/auth/login - failed	   Every time app logs info
+logs/error.log	    ❌ Only error logs	              User not found, DB connection failed, Internal server error	   Only when errors occur
+Console (terminal)	👀 Real-time view	               Everything visible in dev	                                    Immediately, always
+-----------------------------
+🔁 Example Logs
+
+✅ In logs/combined.log
+
+[2025-06-21T12:01:05.231Z] info: User Krishna registered
+[2025-06-21T12:01:07.511Z] error: GET /api/products/999 - Product not found
+
+❌ In logs/error.log
+
+[2025-06-21T12:01:07.511Z] error: GET /api/products/999 - Product not found
+------------------------------
+📁 Log Directory Structure
+
+ecommerce-api/
+├── logs/
+│   ├── error.log       ← ❌ Only errors
+│   └── combined.log    ← ✅ All logs
+
+✅ Tip for You
+Later, you can:
+
+📤 Send logs to email, Slack, or cloud (like Loggly, ELK)
+🧹 Use tools to rotate/delete old logs
+
+==================================================WEEK 5======================================================
+
+✅ Week 5: Testing (Unit + Integration) — this makes sure your API works correctly, safely, and is ready for production.
+
+🎯 Week 5 Goal
+
+✅ Unit testing with Jest
+✅ Integration testing with Supertest
+✅ Automate API tests
+✅ Optional: Run Postman Collection Tests
+
+✅ Tools We’ll Use
+Tool	          Use
+jest	          Test runner
+supertest	      Test Express APIs
+Postman	        Manual & Collection testing
+----------------------------------------
+npm install --save-dev jest supertest
+
+------------------------------------------
+Step 5: Run Tests
+
+npm test
+
+Output:
+
+PASS  __tests__/auth.test.js
+✓ should register a new user
+✓ should login with correct credentials
+----------------------------------------
+Step 6: Optional – Test with Postman Collection
+Open Postman
+
+Create tests under Tests tab:
+
+pm.test("Status is 200", function () {
+    pm.response.to.have.status(200);
+});
+
+Run collection in Collection Runner
+--------------------------------------
+
+✅ Week 5 Summary
+Task	           Tools
+Unit Tests	     Jest
+API Integration	 Supertest
+Manual Testing	 Postman
+Automation	     Postman Runner
+---------------------------RATE LIMIT-----------------------
+
+Trigger Rate Limit (100+ requests in 15 min)  //IF WITHIN 15 MINUTES 100+ REQUEST SEND THEN ERROR WILL BE SHOW
+Send any request (like GET /api/products) over 100 times quickly.
+
+📢 Expected:
+
+{
+  "message": "Too many requests, please try again later."
+}
+----------------------------MORGAN-------------------------
+ Step 5: Use Morgan for HTTP Logs
+In app.js:
+
+const morgan = require("morgan");
+
+// Log HTTP requests
+app.use(morgan("dev")); // Or use 'combined' for more details
+
+📝 This prints:
+
+GET /api/products 200 15ms
+POST /api/auth/login 401 10ms
+==================================WEEK 6======================================
+
+🎯 Week 6 Goal
+
+✅ Deploy backend server online
+✅ Manage your Node.js app using PM2
+✅ Reverse proxy using Nginx
+✅ Optional: Deploy easily using Render
+✅ Optional: Setup in AWS EC2 (basic)
+
+Render	⭐ Easy	Beginners (free & quick)
+
+
+
+
+
+
