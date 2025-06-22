@@ -49,6 +49,11 @@ app.use("/api/orders", orderRoutes);
 const errorHandler = require("./middlewares/error.middleware");
 app.use(errorHandler);
 
+app.get("/", (req, res) => {
+  res.send("🚀 Welcome to the E-commerce Backend API!");
+});
+
+
 // Start server
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
